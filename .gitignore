@@ -137,3 +137,17 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Smart contracts (managed in separate workspace)
+contracts/
+artifacts/
+
+# Design assets
+*.zip
+default_shadcn_theme.css
+
+# pnpm workspace config (contracts workspace)
+pnpm-workspace.yaml
+
+# Editor
+.vscode/
