@@ -29,18 +29,14 @@ npm install
 
 ### 2. Configure environment
 
-Copy `.env.example` to `.env` and fill in your deployed contract addresses:
+Set the required environment variables before running:
 
-```bash
-cp .env.example .env
-```
-
-```env
-VITE_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
-VITE_STAKING_PROXY_ADDRESS=0x...   # ERC-1967 proxy address
-VITE_TOKEN_ADDRESS=0x...           # ERC-20 staking token address
-VITE_TOKEN_SYMBOL=MOCK             # Token symbol shown in UI
-VITE_TOKEN_DECIMALS=18
+```powershell
+$env:VITE_RPC_URL="https://ethereum-sepolia-rpc.publicnode.com"
+$env:VITE_STAKING_PROXY_ADDRESS="0x..."
+$env:VITE_TOKEN_ADDRESS="0x..."
+$env:VITE_TOKEN_SYMBOL="MOCK"
+$env:VITE_TOKEN_DECIMALS="18"
 ```
 
 ### 3. Run dev server
