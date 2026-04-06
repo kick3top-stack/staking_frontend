@@ -1,6 +1,6 @@
 import { BrowserProvider, JsonRpcProvider, Contract, formatUnits, parseUnits } from 'ethers';
-import StakingABI from '../../artifacts/contracts/StakingContract.sol/StakingContract.json';
-import MockERC20ABI from '../../artifacts/contracts/mocks/MockERC20.sol/MockERC20.json';
+import StakingABI from '../abi/StakingContract.json';
+import MockERC20ABI from '../abi/MockERC20.json';
 
 // ── Update these after deploying to your network ──────────────────────────────
 export const STAKING_PROXY_ADDRESS = import.meta.env.VITE_STAKING_PROXY_ADDRESS ?? '';
