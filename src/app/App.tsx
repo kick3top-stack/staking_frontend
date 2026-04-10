@@ -40,7 +40,7 @@ export default function App() {
   const [walletAddress, setWalletAddress] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('staking_jwt'));
   const [toasts, setToasts] = useState<ToastData[]>([]);
   const [stakes, setStakes] = useState<OnChainStake[]>([]);
   const [plans, setPlans] = useState<OnChainPlan[]>([]);
@@ -141,15 +141,18 @@ export default function App() {
       ]);
 
       removeToast(toastId);
-      addToast('pending', 'Please sign the message to authenticate…');
 
       // SIWE login
+      const signToastId = addToast('pending', 'Please sign the message in MetaMask…');
       try {
         await login(address);
         setIsAuthenticated(true);
+        removeToast(signToastId);
         addToast('success', 'Wallet connected & signed in!');
-      } catch {
-        addToast('success', 'Wallet connected! (Sign message to access history)');
+      } catch (signErr: unknown) {
+        removeToast(signToastId);
+        addToast('error', (signErr as Error).message ?? 'Sign-in failed');
+        addToast('success', 'Wallet connected! Click History to sign in.');
       }
 
       // listen for account changes
