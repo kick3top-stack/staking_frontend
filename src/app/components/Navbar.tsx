@@ -29,6 +29,7 @@ export function Navbar({
     { name: 'Dashboard', id: 'dashboard' },
     { name: 'Stake', id: 'stake' },
     { name: 'My Stakes', id: 'my-stakes' },
+    { name: 'History', id: 'history' },
     ...(isAdmin ? [{ name: 'Admin', id: 'admin' }] : [])
   ];
 
