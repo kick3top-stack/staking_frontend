@@ -1,5 +1,4 @@
 import { BrowserProvider } from 'ethers';
-import { SiweMessage } from 'siwe';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 
@@ -10,32 +9,38 @@ export async function login(address: string): Promise<string> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ address }),
   });
+
+  if (!nonceRes.ok) throw new Error('Failed to get nonce');
   const { nonce } = await nonceRes.json() as { nonce: string };
 
-  // 2. Build SIWE message
+  // 2. Build SIWE message manually (no siwe package needed on frontend)
   const provider = new BrowserProvider(window.ethereum);
   const network = await provider.getNetwork();
+  const chainId = Number(network.chainId);
+  const issuedAt = new Date().toISOString();
 
-  const message = new SiweMessage({
-    domain: window.location.host,
+  const message = [
+    `${window.location.host} wants you to sign in with your Ethereum account:`,
     address,
-    statement: 'Sign in to StakeVault',
-    uri: window.location.origin,
-    version: '1',
-    chainId: Number(network.chainId),
-    nonce,
-  });
-  const preparedMessage = message.prepareMessage();
+    '',
+    'Sign in to StakeVault',
+    '',
+    `URI: ${window.location.origin}`,
+    'Version: 1',
+    `Chain ID: ${chainId}`,
+    `Nonce: ${nonce}`,
+    `Issued At: ${issuedAt}`,
+  ].join('\n');
 
-  // 3. Sign with wallet
+  // 3. Sign with wallet — this triggers MetaMask popup
   const signer = await provider.getSigner();
-  const signature = await signer.signMessage(preparedMessage);
+  const signature = await signer.signMessage(message);
 
   // 4. Verify on backend → get JWT
   const verifyRes = await fetch(`${API_URL}/api/auth/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: preparedMessage, signature }),
+    body: JSON.stringify({ message, signature }),
   });
 
   if (!verifyRes.ok) {
