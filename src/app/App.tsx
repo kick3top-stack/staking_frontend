@@ -4,7 +4,9 @@ import { Dashboard } from './components/Dashboard';
 import { StakePage } from './components/StakePage';
 import { MyStakes } from './components/MyStakes';
 import { AdminPage } from './components/AdminPage';
+import { StakingHistory } from './components/StakingHistory';
 import { ToastContainer } from './components/ToastContainer';
+import { login, logout, getToken } from './auth';
 import {
   TOKEN_SYMBOL,
   STAKING_PROXY_ADDRESS,
@@ -38,6 +40,7 @@ export default function App() {
   const [walletAddress, setWalletAddress] = useState('');
   const [walletBalance, setWalletBalance] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [toasts, setToasts] = useState<ToastData[]>([]);
   const [stakes, setStakes] = useState<OnChainStake[]>([]);
   const [plans, setPlans] = useState<OnChainPlan[]>([]);
@@ -138,7 +141,16 @@ export default function App() {
       ]);
 
       removeToast(toastId);
-      addToast('success', 'Wallet connected!');
+      addToast('pending', 'Please sign the message to authenticate…');
+
+      // SIWE login
+      try {
+        await login(address);
+        setIsAuthenticated(true);
+        addToast('success', 'Wallet connected & signed in!');
+      } catch {
+        addToast('success', 'Wallet connected! (Sign message to access history)');
+      }
 
       // listen for account changes
       window.ethereum?.on('accountsChanged', (accs: string[]) => {
@@ -146,9 +158,13 @@ export default function App() {
           setWalletConnected(false);
           setWalletAddress('');
           setIsAdmin(false);
+          setIsAuthenticated(false);
           setStakes([]);
+          logout();
         } else {
           setWalletAddress(accs[0]);
+          setIsAuthenticated(false);
+          logout();
           refreshUserData(accs[0]);
         }
       });
@@ -252,6 +268,14 @@ export default function App() {
         ) : (
           <div className="text-center py-20">
             <p className="text-xl mb-4">Please connect your wallet to view stakes</p>
+          </div>
+        );
+      case 'history':
+        return walletConnected && isAuthenticated ? (
+          <StakingHistory address={walletAddress} />
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-xl mb-4">Please connect and sign in to view history</p>
           </div>
         );
       case 'admin':
