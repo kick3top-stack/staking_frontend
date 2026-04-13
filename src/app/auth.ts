@@ -91,7 +91,10 @@ export async function fetchHistory(address: string) {
   }
   if (!res.ok) throw new Error(`History request failed (${res.status})`);
 
-  return res.json() as Promise<{
+  const text = await res.text();
+  if (!text) return { stakeCreateds: [], unstakeds: [] };
+
+  return JSON.parse(text) as Promise<{
     stakeCreateds: StakeCreatedEvent[];
     unstakeds: UnstakedEvent[];
   }>;
