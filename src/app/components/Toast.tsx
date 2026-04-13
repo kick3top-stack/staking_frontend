@@ -11,7 +11,8 @@ interface ToastProps {
 export function Toast({ type, message, onClose, autoDismiss = true }: ToastProps) {
   useEffect(() => {
     if (autoDismiss && type !== 'pending') {
-      const timer = setTimeout(onClose, 4000);
+      const duration = type === 'error' ? 8000 : 4000;
+      const timer = setTimeout(onClose, duration);
       return () => clearTimeout(timer);
     }
   }, [autoDismiss, type, onClose]);
