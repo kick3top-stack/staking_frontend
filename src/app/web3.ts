@@ -175,42 +175,21 @@ export async function txAddPlan(days: number, apr: number, penalty: number): Pro
   await tx.wait();
 }
 
-/** Fetch contract-level info for admin panel */
+/** Fetch contract-level info for admin panel — reuses dashboard stats for consistent reward pool value */
 export async function fetchContractInfo() {
   const contract = await getStakingContract();
-  const token = await getTokenContract();
-  const [implAddr, isPaused, ownerAddr, contractBalanceRaw] = await Promise.all([
+  const [implAddr, isPaused, ownerAddr, stats] = await Promise.all([
     contract.implementation(),
     contract.paused(),
     contract.owner(),
-    token.balanceOf(STAKING_PROXY_ADDRESS),
+    fetchDashboardStats(),
   ]);
-
-  // Derive reward pool = contract balance - sum of active stakes
-  let tvlRaw = 0n;
-  let id = 0;
-  while (true) {
-    const batch = Array.from({ length: 20 }, (_, i) => id + i);
-    const results = await Promise.allSettled(batch.map((i) => contract.getStake(i)));
-    let anyFound = false;
-    for (const r of results) {
-      if (r.status === 'fulfilled' && r.value.staker !== '0x0000000000000000000000000000000000000000') {
-        tvlRaw += r.value.amount;
-        anyFound = true;
-      }
-    }
-    if (!anyFound) break;
-    id += 20;
-  }
-
-  const contractBalance = parseFloat(formatUnits(contractBalanceRaw, TOKEN_DECIMALS));
-  const tvl = parseFloat(formatUnits(tvlRaw, TOKEN_DECIMALS));
 
   return {
     proxyAddress: STAKING_PROXY_ADDRESS,
     implementationAddress: implAddr as string,
     ownerAddress: ownerAddr as string,
-    rewardPoolBalance: Math.max(0, contractBalance - tvl),
+    rewardPoolBalance: stats.rewardPoolBalance,
     isPaused: isPaused as boolean,
   };
 }
