@@ -5,6 +5,7 @@ import { StakePage } from './components/StakePage';
 import { MyStakes } from './components/MyStakes';
 import { AdminPage } from './components/AdminPage';
 import { StakingHistory } from './components/StakingHistory';
+import { HelpPage } from './components/HelpPage';
 import { ToastContainer } from './components/ToastContainer';
 import { login, logout, getToken } from './auth';
 import {
@@ -281,6 +282,8 @@ export default function App() {
             <p className="text-xl mb-4">Please connect and sign in to view history</p>
           </div>
         );
+      case 'help':
+        return <HelpPage />;
       case 'admin':
         return (
           <AdminPage
