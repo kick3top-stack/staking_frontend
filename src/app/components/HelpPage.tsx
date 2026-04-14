@@ -1,4 +1,4 @@
-import { BookOpen, TrendingUp, AlertTriangle, Wallet, Clock, Coins, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookOpen, TrendingUp, AlertTriangle, Wallet, Coins, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { TOKEN_SYMBOL } from '../web3';
 
@@ -101,43 +101,6 @@ export function HelpPage() {
         </div>
       </section>
 
-      {/* Plans Overview */}
-      <section className="mb-10">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-warning/10 rounded-lg">
-            <Clock className="text-warning" size={20} />
-          </div>
-          <h2 className="text-2xl">Staking Plans</h2>
-        </div>
-
-        <div className="bg-surface border border-border rounded-xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-background border-b border-border">
-              <tr>
-                <th className="px-6 py-3 text-left text-muted-foreground">Lock Period</th>
-                <th className="px-6 py-3 text-left text-muted-foreground">APR</th>
-                <th className="px-6 py-3 text-left text-muted-foreground">Early Penalty</th>
-                <th className="px-6 py-3 text-left text-muted-foreground">Best for</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { days: '30', apr: '8%', penalty: '50%', best: 'Short-term flexibility' },
-                { days: '90', apr: '12%', penalty: '50%', best: 'Balanced returns' },
-                { days: '180', apr: '16%', penalty: '50%', best: 'Maximum rewards' },
-              ].map((row) => (
-                <tr key={row.days} className="border-b border-border last:border-0">
-                  <td className="px-6 py-4">{row.days} Days</td>
-                  <td className="px-6 py-4 text-success">{row.apr}</td>
-                  <td className="px-6 py-4 text-warning">{row.penalty}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{row.best}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
       {/* Early Unstake Warning */}
       <section className="mb-10">
         <div className="flex items-center gap-3 mb-6">
@@ -149,10 +112,10 @@ export function HelpPage() {
 
         <div className="bg-error/5 border border-error/20 rounded-xl p-6 space-y-4">
           <p className="text-sm text-muted-foreground">
-            If you unstake before the lock period ends, a <span className="text-warning font-medium">50% penalty</span> is applied to your accrued reward. Your original staked amount is always returned in full.
+            If you unstake before the lock period ends, a <span className="text-warning font-medium">penalty</span> is applied to your accrued reward. Your original staked amount is always returned in full.
           </p>
           <div className="bg-background rounded-lg p-4 font-mono text-sm">
-            You receive = Amount + (Reward × 0.5)
+            You receive = Amount + (Reward × penalty) / 100
           </div>
           <p className="text-sm text-muted-foreground">
             Once the lock period expires, your stake is marked as <span className="text-success">Matured</span> and you can withdraw with no penalty.
